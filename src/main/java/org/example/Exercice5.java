@@ -12,7 +12,7 @@ public class Exercice5 {
 
     private static final String SERVER_ADDRESS = "51.195.253.124";
     private static final int SERVER_PORT = 12345;
-    private static final int THREAD_COUNT = 10; // Nombre de threads à utiliser
+    private static final int THREAD_COUNT = 600; // Nombre de threads à utiliser
 
     public static void main(String[] args) {
         ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
@@ -45,6 +45,7 @@ public class Exercice5 {
 
                 // Lire la réponse du serveur
                 String response = in.readLine();
+                System.out.println("PIN : " + pin + " - " + response);
                 if (!response.contains("Incorrect PIN")) {
                     System.out.println("Code PIN trouvé : " + pin);
                     return;

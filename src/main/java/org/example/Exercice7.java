@@ -12,7 +12,7 @@ public class Exercice7 {
     public static void main(String[] args) {
         byte[] encrypted = new byte[0];
         try {
-            encrypted = Files.readAllBytes(Paths.get("ress/cbc_ciphertext"));
+            encrypted = Files.readAllBytes(Paths.get("src/main/resources/cbc_ciphertext"));
         } catch (IOException e) {
             e.printStackTrace();
             return;

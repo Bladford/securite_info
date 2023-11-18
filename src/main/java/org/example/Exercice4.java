@@ -8,8 +8,8 @@ import java.util.List;
 
 public class Exercice4 {
 
-    private static final String SOURCE_ZIP_FILE_PATH = "resources/archive.zip";
-    private static final String DESTINATION_FOLDER_PATH = "C:\\Users\\Ocean\\IdeaProjects\\SecuInfo\\src\\main\\resources\\";
+    private static final String SOURCE_ZIP_FILE_PATH = "src/main/resources/archive.zip";
+    private static final String DESTINATION_FOLDER_PATH = "src/main/resources/";
 
     public static void main(String[] args) {
         casserArchive();

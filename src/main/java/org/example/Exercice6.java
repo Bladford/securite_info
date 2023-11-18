@@ -1,36 +1,33 @@
 package org.example;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+
 public class Exercice6 {
 
-    public static void main(String[] args) {
-        String encryptedFilePath = "ress/encrypted_file_hard.jpg";
-        try {
-                    analyzeFrequency(encryptedFilePath);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+    public static void decodeFile(String fromFileName, String toFileName) throws IOException {
+        try (FileInputStream fileInput = new FileInputStream(fromFileName);
+             FileOutputStream fileOutput = new FileOutputStream(toFileName)) {
 
-            private static void analyzeFrequency(String filePath) throws IOException {
-                Map<Byte, Integer> frequencyMap = new HashMap<>();
+            // Lire la première valeur pour calculer la clé
+            int tmp = fileInput.read();
+            int key = tmp ^ 255;
 
-                try (FileInputStream fileStream = new FileInputStream(filePath)) {
-                    int b;
-                    while ((b = fileStream.read()) != -1) {
-                        byte byteValue = (byte) b;
-                        frequencyMap.put(byteValue, frequencyMap.getOrDefault(byteValue, 0) + 1);
-                    }
-                }
+            // Réinitialiser le pointeur de fichier au début
+            fileInput.getChannel().position(0);
 
-                // Afficher ou analyser la fréquence des octets
-                for (Map.Entry<Byte, Integer> entry : frequencyMap.entrySet()) {
-                    System.out.println("Octet: " + entry.getKey() + ", Fréquence: " + entry.getValue());
-                }
-
-                // Ici, vous pouvez ajouter une logique supplémentaire pour comparer
-                // cette fréquence avec celle d'un fichier JPEG non chiffré.
+            // Lire et écrire en appliquant XOR avec la clé
+            while ((tmp = fileInput.read()) != -1) {
+                fileOutput.write(tmp ^ key);
             }
         }
+    }
+
+    public static void main(String[] args) {
+        try {
+            decodeFile("src/main/resources/encrypted_file_simple.jpg", "src/main/resources/decrypted_file_simple.jpg");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
