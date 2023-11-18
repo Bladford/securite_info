@@ -3,30 +3,48 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashSet;
+import java.util.ArrayList;
 
-public class Exercice8 {
-    private static final String IP_ADDRESS = "51.195.253.124";
-    private static final int PORT = 4321;
+public class Exercice8{
+    public static void main(String[] args) throws Exception {
+        final String host = "51.195.253.124";
+        final int port = 4321;
+        ArrayList<HashSet<Character>> missingChars = new ArrayList<>();
 
-    public static void main(String[] args) {
-        try (Socket socket = new Socket(IP_ADDRESS, PORT);
-             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+        for (int i = 0; i < 200; i++) { // Nombre de tentatives
+            try (Socket socket = new Socket(host, port);
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                 PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
 
-            String messageChiffre = in.readLine();
-            System.out.println("Message reçu: " + messageChiffre);
+                String encryptedMessage = reader.readLine();
+                adjustMissingCharsList(missingChars, encryptedMessage.length());
 
-            String messageSecret = decodeVigenere(messageChiffre);
-            System.out.println("Message décodé: " + messageSecret);
+                for (int j = 0; j < encryptedMessage.length(); j++) {
+                    missingChars.get(j).remove(encryptedMessage.charAt(j));
+                }
+            }
+        }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        StringBuilder secretMessage = new StringBuilder();
+        for (HashSet<Character> set : missingChars) {
+            if (set.size() == 1) {
+                secretMessage.append(set.iterator().next());
+            } else {
+                secretMessage.append("?"); // Caractère inconnu
+            }
+        }
+
+        System.out.println("Message secret estimé : " + secretMessage);
+    }
+
+    private static void adjustMissingCharsList(ArrayList<HashSet<Character>> missingChars, int newLength) {
+        for (int i = missingChars.size(); i < newLength; i++) {
+            HashSet<Character> charSet = new HashSet<>();
+            for (char c = 'A'; c <= 'Z'; c++) {
+                charSet.add(c);
+            }
+            missingChars.add(charSet);
         }
     }
-
-    private static String decodeVigenere(String messageChiffre) {
-        //Exercice2.casserLeCode(messageChiffre);
-        return "";
-    }
-
-
 }

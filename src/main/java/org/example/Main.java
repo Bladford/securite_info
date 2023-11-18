@@ -38,7 +38,11 @@ public class Main {
             Exercice7.main(null);
         }
         if (choixSaisi==8) {
-            Exercice8.main(null);
+            try {
+                Exercice8.main(null);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         if (choixSaisi==9) {
             Exercice9.main(null);
