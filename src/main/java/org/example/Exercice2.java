@@ -56,7 +56,7 @@ public class Exercice2 {
                     tailleCle(chaine);
                     break;
                 case 4:
-                    casserLeCode("");
+                    casserLeCode();
                     break;
                 case 5:
                     System.out.println("Au revoir !");
@@ -68,11 +68,9 @@ public class Exercice2 {
         }
     }
 
-    protected static void casserLeCode(String chaine) {
-        if (chaine.isEmpty()) {
-            System.out.println("Veuillez saisir une chaîne de caractères :");
-            chaine = scanner.nextLine().toLowerCase();
-        }
+    protected static void casserLeCode() {
+        System.out.println("Veuillez saisir une chaîne de caractères :");
+        String chaine = scanner.nextLine().toLowerCase();
 
         String chaineSansPonctuation = suppressionIndesirable(chaine);
         int longueurCle = tailleCle(chaineSansPonctuation);
