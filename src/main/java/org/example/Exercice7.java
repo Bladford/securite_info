@@ -1,5 +1,7 @@
 package org.example;
-import javax.crypto.BadPaddingException;
+import java.net.Socket;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -7,89 +9,80 @@ import java.util.Arrays;
 
 public class Exercice7 {
 
-    private static final int CIPHER_BLOCK_SIZE = 16;
+    private static final String HOST = "51.195.253.124";
+    private static final int PORT = 11111;
 
     public static void main(String[] args) {
-        byte[] encrypted = new byte[0];
+        // Charger le texte chiffré depuis le fichier
+        byte[] ciphertext = loadCiphertextFromFile("src/main/resources/cbc_ciphertext");
+
+        // Découper le texte chiffré en blocs (IV, C1, C2)
+        byte[] iv = Arrays.copyOfRange(ciphertext, 0, 16);
+        byte[] c1 = Arrays.copyOfRange(ciphertext, 16, 32);
+        byte[] c2 = Arrays.copyOfRange(ciphertext, 32, 48);
+
+        // Décrypter les blocs
+        byte[] p2;
+        byte[] p1;
         try {
-            encrypted = Files.readAllBytes(Paths.get("src/main/resources/cbc_ciphertext"));
+            p2 = decryptBlock(c2, c1);
+            p1 = decryptBlock(c1, iv);
         } catch (IOException e) {
-            e.printStackTrace();
-            return;
+            throw new RuntimeException(e);
         }
 
-        Exercice7 attacker = new Exercice7();
-        try {
-            byte[] decrypted = attacker.decrypt(encrypted);
-            System.out.println("Decrypted Message: " + new String(decrypted));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // Afficher le message déchiffré
+        System.out.println("Message déchiffré: " + new String(p1) + new String(p2));
     }
 
-    // Méthode de déchiffrement
-    public byte[] decrypt(byte[] encrypted) throws Exception {
-        byte[] decrypted = new byte[encrypted.length - CIPHER_BLOCK_SIZE];
-        byte[] iv = Arrays.copyOfRange(encrypted, 0, CIPHER_BLOCK_SIZE);
-        byte[] block, decryptedBlock;
+    private static byte[] decryptBlock(byte[] cipherBlock, byte[] previousBlock) throws IOException {
+        byte[] decryptedBlock = new byte[cipherBlock.length];
+        byte[] tempBlock = Arrays.copyOf(previousBlock, previousBlock.length);
 
-        for (int i = CIPHER_BLOCK_SIZE; i < encrypted.length; i += CIPHER_BLOCK_SIZE) {
-            block = Arrays.copyOfRange(encrypted, i, i + CIPHER_BLOCK_SIZE);
-            decryptedBlock = decryptBlock(block, iv);
-            System.arraycopy(decryptedBlock, 0, decrypted, i - CIPHER_BLOCK_SIZE, CIPHER_BLOCK_SIZE);
-            iv = block;
-        }
-
-        return stripPadding(decrypted);
-    }
-
-    // Méthode de déchiffrement d'un block
-    private byte[] decryptBlock(byte[] block, byte[] iv) throws Exception {
-        byte[] decryptedBlock = new byte[CIPHER_BLOCK_SIZE];
-        byte[] trialBlock = new byte[CIPHER_BLOCK_SIZE * 2];
-
-        System.arraycopy(iv, 0, trialBlock, 0, CIPHER_BLOCK_SIZE);
-        System.arraycopy(block, 0, trialBlock, CIPHER_BLOCK_SIZE, CIPHER_BLOCK_SIZE);
-        //Pour chaque byte du block
-        for (int byteIndex = 0; byteIndex < CIPHER_BLOCK_SIZE; byteIndex++) {
-            for (int guess = 0; guess <= 255; guess++) {
-                trialBlock[CIPHER_BLOCK_SIZE - 1 - byteIndex] = (byte) (iv[CIPHER_BLOCK_SIZE - 1 - byteIndex] ^ guess);
-                if (isPaddingCorrect(trialBlock)) {
-                    decryptedBlock[CIPHER_BLOCK_SIZE - 1 - byteIndex] = (byte) (block[CIPHER_BLOCK_SIZE - 1 - byteIndex] ^ guess);
+        for (int i = cipherBlock.length - 1; i >= 0; i--) {
+            for (int guess = 0; guess < 256; guess++) {
+                tempBlock[i] = (byte) (guess ^ (cipherBlock.length - i));
+                if (isPaddingCorrect(concatenate(tempBlock, cipherBlock))) {
+                    decryptedBlock[i] = (byte) (guess ^ previousBlock[i]);
                     break;
                 }
             }
         }
-
         return decryptedBlock;
     }
 
-    // Méthode de vérification du padding
-    private boolean isPaddingCorrect(byte[] trialBlock) {
+    private static byte[] concatenate(byte[] a, byte[] b) {
+        byte[] result = new byte[a.length + b.length];
+        System.arraycopy(a, 0, result, 0, a.length);
+        System.arraycopy(b, 0, result, a.length, b.length);
+        return result;
+    }
+
+
+    private static byte[] loadCiphertextFromFile(String path) {
         try {
-            // On récupère le dernier byte du block
-            byte[] paddedBlock = Arrays.copyOfRange(trialBlock, CIPHER_BLOCK_SIZE, trialBlock.length);
-            stripPadding(paddedBlock);
-            return true;
-        } catch (BadPaddingException e) {
-            return false;
+            return Files.readAllBytes(Paths.get(path));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new byte[0];
         }
     }
 
-    // Méthode de suppression du padding
-    private byte[] stripPadding(byte[] paddedText) throws BadPaddingException {
-        int paddingSize = paddedText[paddedText.length - 1];
-        //  On vérifie que le padding est correct
-        if (paddingSize < 1 || paddingSize > CIPHER_BLOCK_SIZE) {
-            throw new BadPaddingException("Invalid padding length: " + paddingSize);
+
+    private static boolean isPaddingCorrect(byte[] modifiedBlock) throws IOException {
+        try (Socket socket = new Socket(HOST, PORT);
+             OutputStream out = socket.getOutputStream();
+             InputStream in = socket.getInputStream()) {
+            out.write(modifiedBlock);
+            out.flush();
+            byte[] response = new byte[1];
+            in.read(response);
+
+            // Convertir le byte en une représentation lisible
+            //System.out.println("Padding correct: " + Arrays.toString(response));
+            return response[0] == 1; // Retourner true si le padding est correct
         }
-        //Pour chaque byte du padding
-        for (int i = paddedText.length - paddingSize; i < paddedText.length; i++) {
-            if (paddedText[i] != paddingSize) {
-                throw new BadPaddingException("Invalid padding content at position " + i);
-            }
-        }
-        // On retourne le texte sans le padding
-        return Arrays.copyOf(paddedText, paddedText.length - paddingSize);
     }
+
+
 }
