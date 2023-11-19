@@ -32,6 +32,7 @@ public class Exercice9 {
             System.out.println("Début de la factorisation en utilisant " + NUM_THREADS + " threads...");
 
             for (int i = 0; i < NUM_THREADS; i++) {
+                // Calculer les bornes de recherche pour chaque thread
                 BigInteger start = range.multiply(BigInteger.valueOf(i)).add(BigInteger.valueOf(2));
                 BigInteger end = start.add(range);
 

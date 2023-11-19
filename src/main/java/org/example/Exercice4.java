@@ -20,7 +20,7 @@ public class Exercice4 {
         StringBuilder motDePasse = new StringBuilder("a");
         int compteur = 0;
         boolean archiveBroken = false;
-
+        // Tant que l'archive n'est pas cassée
         while (!archiveBroken) {
             try {
                 decompressZip(motDePasse.toString());
@@ -31,14 +31,16 @@ public class Exercice4 {
                 compteur++;
             }
         }
-
+        // Affichage des statistiques
         long endTime = System.currentTimeMillis();
         System.out.println("Temps d'exécution : " + (endTime - startTime) + " ms");
         System.out.println("Nombre de mots de passe testés : " + compteur);
     }
 
+    // Incrémente le mot de passe
     private static void incrementPassword(StringBuilder motDePasse) {
         int index = motDePasse.length() - 1;
+        // Tant que le caractère à l'index est un 'z'
         while (index >= 0 && motDePasse.charAt(index) == 'z') {
             motDePasse.setCharAt(index, 'a');
             index--;
@@ -50,8 +52,10 @@ public class Exercice4 {
         }
     }
 
+    // Décompresse l'archive avec le mot de passe donné
     private static void decompressZip(String password) throws ZipException {
         ZipFile zipFile = new ZipFile(SOURCE_ZIP_FILE_PATH, password.toCharArray());
+        // Si l'archive est chiffrée
         if (zipFile.isEncrypted()) {
             List<FileHeader> fileHeaders = zipFile.getFileHeaders();
             for (FileHeader fileHeader : fileHeaders) {
