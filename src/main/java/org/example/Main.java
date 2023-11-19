@@ -17,13 +17,13 @@ public class Main {
         Scanner choix = new Scanner(System.in);
         int choixSaisi = choix.nextInt();
         if (choixSaisi==1){
-            Exercice1.menu();
+            Exercice1.main(null);
         }
         if (choixSaisi==2) {
-            Exercice2.menu();
+            Exercice2.main(null);
         }
         if (choixSaisi==3) {
-            Exercice3.menu();
+            Exercice3.main(null);
         }
         if (choixSaisi==4) {
             Exercice4.main(null);

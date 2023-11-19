@@ -1,5 +1,10 @@
 package org.example;
-import java.io.*;
+
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -7,14 +12,23 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import static java.lang.Thread.sleep;
+
 public class Exercice3 {
     static String hash = "5a74dd4eef347734c8a0a9a3188abd11";
 
-    public static void main() {
-        menu();
-    }
+    public static void main(String[] args) {
+        // Dézippe le fichier src/main/resources/rockyou.zip
+        try {
+            ZipFile zipFile = new ZipFile("src/main/resources/rockyou.zip");
+            zipFile.extractAll("src/main/resources/");
 
-    public static void menu() {
+        } catch (ZipException e) {
+            e.printStackTrace();
+            System.out.println("Erreur lors de la décompression du fichier rockyou.zip");
+            return; // Arrête l'exécution si une erreur se produit lors de la décompression
+        }
+
         try {
             findPassword();
         } catch (NoSuchAlgorithmException e) {
@@ -22,7 +36,14 @@ public class Exercice3 {
         } catch (IOException e) {
             System.err.println("Erreur lors de la lecture du fichier : " + e.getMessage());
         }
+
+        // Supprime le fichier rockyou.txt
+        File file = new File("src/main/resources/rockyou.txt");
+        if (!file.delete()) {
+            System.err.println("Erreur lors de la suppression du fichier rockyou.txt");
+        }
     }
+
 
     public static void findPassword() throws NoSuchAlgorithmException, IOException {
         // Charger le fichier de mots de passe

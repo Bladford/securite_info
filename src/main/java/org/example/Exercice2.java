@@ -33,11 +33,8 @@ public class Exercice2 {
             0.128, // y
             0.326  // z
     };
-    public static void main(String[] args) {
-        menu();
-    }
 
-    public static void menu() {
+    public static void main(String[] args) {
         while (true) {
             System.out.println("Que voulez-vous faire ?\n1. Chiffrer\n2. Dechiffrer\n3. Trouver Longueur de Clé\n4. Casser le code\n5. Quitter");
             int choixSaisi = scanner.nextInt();
@@ -68,6 +65,7 @@ public class Exercice2 {
         }
     }
 
+    //Méthode pour casser le code
     protected static void casserLeCode() {
         System.out.println("Veuillez saisir une chaîne de caractères :");
         String chaine = scanner.nextLine().toLowerCase();
@@ -83,16 +81,17 @@ public class Exercice2 {
         System.out.println("Texte déchiffré : " + texteDechiffre);
     }
 
+    //Méthode pour trouver la clé
     private static String trouverCle(String chaine, int longueurCle) {
         StringBuilder cle = new StringBuilder();
-
+        // Pour chaque lettre de la clé
         for (int i = 0; i < longueurCle; i++) {
             StringBuilder sousTexte = new StringBuilder();
-
+            // Extraire les lettres de la chaîne qui correspondent à la lettre de la clé
             for (int j = i; j < chaine.length(); j += longueurCle) {
                 sousTexte.append(chaine.charAt(j));
             }
-
+            // Trouver le décalage de la lettre de la clé
             int decalage = trouverDecalage(sousTexte.toString());
             char lettreCle = (char) ('a' + decalage);
             cle.append(lettreCle);
@@ -101,18 +100,22 @@ public class Exercice2 {
         return cle.toString();
     }
 
+    //Méthode pour trouver le décalage
     private static int trouverDecalage(String sousTexte) {
         int[] frequences = new int[26];
+        // Compter les occurrences de chaque lettre
         for (char c : sousTexte.toCharArray()) {
             if (c >= 'a' && c <= 'z') {
                 frequences[c - 'a']++;
             }
         }
-
+        // Calculer la corrélation entre les fréquences de la langue française et les fréquences du texte
         int decalage = 0;
         double maxCorrelation = 0;
+        // Pour chaque décalage possible
         for (int i = 0; i < 26; i++) {
             double correlation = 0;
+            // Pour chaque lettre
             for (int j = 0; j < 26; j++) {
                 correlation += frequencesFrancais[j] * frequences[(j + i) % 26];
             }
@@ -125,10 +128,7 @@ public class Exercice2 {
         return decalage;
     }
 
-
-
-
-
+    //Méthode pour trouver la taille de la clé
     private static int tailleCle(String chaine) {
         chaine = suppressionIndesirable(chaine.toLowerCase());
         Map<String, Integer> sousChaines = trouverSousChaines(chaine);
@@ -138,7 +138,7 @@ public class Exercice2 {
         return longueurCle;
     }
 
-
+    //Méthode pour trouver les sous-chaînes
     private static Map<String, Integer> trouverSousChaines(String chaine) {
         Map<String, Integer> sousChaines = new HashMap<>();
         int tailleSousChaine = 3; // Vous pouvez ajuster cette valeur
@@ -153,14 +153,15 @@ public class Exercice2 {
         return sousChaines;
     }
 
+    //Méthode pour calculer les distances
     private static Map<Integer, Integer> calculerDistances(String chaine, Map<String, Integer> sousChaines) {
         Map<Integer, Integer> distances = new HashMap<>();
-
+        // Pour chaque sous-chaîne
         for (Map.Entry<String, Integer> entry : sousChaines.entrySet()) {
             String sousChaine = entry.getKey();
             int positionPrecedente = entry.getValue();
-
             int position = positionPrecedente;
+            // Tant que cette sous-chaîne apparaît dans la chaîne
             while ((position = chaine.indexOf(sousChaine, position + 1)) != -1) {
                 int distance = position - positionPrecedente;
                 distances.put(distance, distances.getOrDefault(distance, 0) + 1);
@@ -171,17 +172,19 @@ public class Exercice2 {
         return distances;
     }
 
-
+    //Micro class pour trouver la longueur de la clé
     private static class CleProbabilite {
         int longueurCle;
         double probabilite;
 
+        //Constructeur
         public CleProbabilite(int longueurCle, double probabilite) {
             this.longueurCle = longueurCle;
             this.probabilite = probabilite;
         }
     }
 
+    //Méthode pour trouver la longueur de la clé
     private static int trouverLongueurCle(Map<Integer, Integer> distances) {
         Map<Integer, Integer> diviseurs = new HashMap<>();
         int totalOccurrences = 0;
@@ -198,6 +201,8 @@ public class Exercice2 {
         }
 
         List<CleProbabilite> probabilites = new ArrayList<>();
+        // Calculer les probabilités de chaque diviseur
+        // Pour chaque diviseur
         for (Map.Entry<Integer, Integer> entry : diviseurs.entrySet()) {
             if (entry.getKey() > 2) { // Ignorer les clés de longueur 1 et 2
                 double probability = (double) entry.getValue() / totalOccurrences * 100;
@@ -220,9 +225,7 @@ public class Exercice2 {
         return probabilites.get(0).longueurCle;
     }
 
-
-
-
+    //Méthode pour supprimer les caractères indésirables
     private static String suppressionIndesirable(String texte) {
         //suprime tout ce qui n'est pas une lettre
         texte = texte.replaceAll("[^a-zA-Z]", "");
@@ -238,6 +241,7 @@ public class Exercice2 {
         System.out.println("Chaîne déchiffrée : " + chiffrerDechiffrer(chaine, cleSaisie, false));
     }
 
+    //Méthode pour chiffrer
     private static void chiffrer() {
         System.out.println("Veuillez saisir une chaîne de caractères :");
         String chaine = supprimerAccents(scanner.nextLine().toLowerCase());
@@ -247,6 +251,7 @@ public class Exercice2 {
         System.out.println("Chaîne chiffrée : " + chiffrerDechiffrer(chaine, cleSaisie, true));
     }
 
+    //Méthode pour chiffrer ou déchiffrer
     private static String chiffrerDechiffrer(String texte, String cle, boolean chiffrer) {
         StringBuilder resultat = new StringBuilder();
         int positionCle = 0;
@@ -269,7 +274,7 @@ public class Exercice2 {
         return resultat.toString();
     }
 
-
+    //Méthode pour supprimer les accents
     private static String supprimerAccents(String texte) {
         texte = Normalizer.normalize(texte, Normalizer.Form.NFD);
         texte = texte.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");

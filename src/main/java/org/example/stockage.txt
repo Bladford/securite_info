@@ -3,68 +3,24 @@
 l'informatique est une discipline extremement vaste et polyvalente qui a transforme radicalement notre monde. elle englobe l'etude, le developpement et l'utilisation des systemes informatiques pour resoudre une gamme variee de problemes, du plus simple au plus complexe. l'informatique repose sur des concepts fondamentaux tels que la manipulation des donnees, le traitement de l'information, et l'automatisation des taches. l'un des aspects essentiels de l'informatique est la conception de logiciels. les programmeurs et les developpeurs de logiciels creent des applications qui permettent aux ordinateurs d'accomplir une multitude de taches, de la gestion de bases de donnees a la creation de jeux video en passant par le traitement de texte. ces logiciels sont la cle de l'efficacite et de la productivite dans de nombreux domaines, des entreprises aux sciences en passant par le divertissement. l'informatique englobe egalement les domaines de la securite informatique et de l'intelligence artificielle. la securite informatique est cruciale pour proteger les donnees et les systemes contre les menaces potentielles, telles que les pirates informatiques et les logiciels malveillants. l'intelligence artificielle, quant a elle, cherche a creer des systemes informatiques capables d'apprendre et de prendre des decisions autonomes, ouvrant ainsi la voie a des applications telles que la reconnaissance vocale, la vision par ordinateur et les vehicules autonomes.l'informatique joue un role central dans notre societe moderne. elle nous permet de communiquer instantanement a travers le monde grace a internet, de gerer nos finances, de suivre notre sante, et meme de divertir nos loisirs. l'evolution constante de la technologie informatique a conduit a des avancees spectaculaires, telles que les smartphones, les ordinateurs portables ultraportables, et les systemes d'intelligence artificielle avances.en resume, l'informatique est un domaine en constante evolution qui faconne notre avenir. elle nous offre des outils puissants pour resoudre des problemes, ameliorer notre qualite de vie, et repousser les limites de ce qui est possible. que ce soit dans le domaine professionnel, academique, ou personnel, l'informatique est une competence precieuse qui continue de jouer un role majeur dans notre societe moderne.
 src/main/resources/
 
-//execrice3
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
+//execrice6
+public static void decodeFile(String fromFileName, String toFileName) throws IOException {
+        try (FileInputStream fileInput = new FileInputStream(fromFileName);
+             FileOutputStream fileOutput = new FileOutputStream(toFileName)) {
 
-public class Exercice3 {
-    static String hash = "5a74dd4eef347734c8a0a9a3188abd11";
+            // Lire la première valeur pour calculer la clé
+            int tmp = fileInput.read();
+            int key = tmp ^ 255;
 
-    public static void main(String[] args) {
-        menu();
-    }
+            // Réinitialiser le pointeur de fichier au début
+            fileInput.getChannel().position(0);
 
-    public static void menu() {
-        try {
-            findPassword();
-        } catch (NoSuchAlgorithmException e) {
-            System.err.println("Algorithme de hachage non supporté : " + e.getMessage());
-        } catch (IOException e) {
-            System.err.println("Erreur lors de la lecture du fichier : " + e.getMessage());
-        }
-    }
-
-    public static void findPassword() throws NoSuchAlgorithmException, IOException {
-        // Charger le fichier de mots de passe
-        List<String> passwords = Files.readAllLines(Paths.get("src/rockyou.txt"), StandardCharsets.UTF_8);
-
-        MessageDigest md = MessageDigest.getInstance("MD5");
-
-        long startTime = System.currentTimeMillis(); // Enregistre le temps de début
-        int passwordCount = 0; // Compteur pour le nombre de mots de passe testés
-
-        for (String password : passwords) {
-            md.reset();
-            byte[] digest = md.digest(password.getBytes(StandardCharsets.UTF_8));
-            String myHash = bytesToHex(digest);
-            passwordCount++; // Incrémente le compteur à chaque mot de passe testé
-            if (myHash.equalsIgnoreCase(hash)) {
-                long endTime = System.currentTimeMillis(); // Enregistre le temps de fin
-                System.out.println("Le mot de passe est : " + password);
-                System.out.println("Nombre de mots de passe testés : " + passwordCount);
-                System.out.println("Temps d'exécution : " + (endTime - startTime) + " ms");
-                return;
+            // Lire et écrire en appliquant XOR avec la clé
+            while ((tmp = fileInput.read()) != -1) {
+                fileOutput.write(tmp ^ key);
             }
         }
-        long endTime = System.currentTimeMillis(); // Enregistre le temps de fin si le mot de passe n'est pas trouvé
-        System.out.println("Mot de passe non trouvé");
-        System.out.println("Nombre de mots de passe testés : " + passwordCount);
-        System.out.println("Temps d'exécution : " + (endTime - startTime) + " ms");
     }
-
-    private static String bytesToHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (byte b : bytes) {
-            sb.append(String.format("%02x", b));
-        }
-        return sb.toString();
-    }
-}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////

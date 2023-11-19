@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.Scanner;
 
 public class Exercice1 {
-    static void menu(){
+    public static void main(String[] args) {
         boolean continuer = true;
         while (continuer) {
             System.out.println("Que voulez-vous faire ?\n1. Chiffrer\n2. Déchiffrer\n3. Brute Force \n4. Retour au menu principal");
