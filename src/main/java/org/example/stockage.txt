@@ -2,25 +2,3 @@
 
 l'informatique est une discipline extremement vaste et polyvalente qui a transforme radicalement notre monde. elle englobe l'etude, le developpement et l'utilisation des systemes informatiques pour resoudre une gamme variee de problemes, du plus simple au plus complexe. l'informatique repose sur des concepts fondamentaux tels que la manipulation des donnees, le traitement de l'information, et l'automatisation des taches. l'un des aspects essentiels de l'informatique est la conception de logiciels. les programmeurs et les developpeurs de logiciels creent des applications qui permettent aux ordinateurs d'accomplir une multitude de taches, de la gestion de bases de donnees a la creation de jeux video en passant par le traitement de texte. ces logiciels sont la cle de l'efficacite et de la productivite dans de nombreux domaines, des entreprises aux sciences en passant par le divertissement. l'informatique englobe egalement les domaines de la securite informatique et de l'intelligence artificielle. la securite informatique est cruciale pour proteger les donnees et les systemes contre les menaces potentielles, telles que les pirates informatiques et les logiciels malveillants. l'intelligence artificielle, quant a elle, cherche a creer des systemes informatiques capables d'apprendre et de prendre des decisions autonomes, ouvrant ainsi la voie a des applications telles que la reconnaissance vocale, la vision par ordinateur et les vehicules autonomes.l'informatique joue un role central dans notre societe moderne. elle nous permet de communiquer instantanement a travers le monde grace a internet, de gerer nos finances, de suivre notre sante, et meme de divertir nos loisirs. l'evolution constante de la technologie informatique a conduit a des avancees spectaculaires, telles que les smartphones, les ordinateurs portables ultraportables, et les systemes d'intelligence artificielle avances.en resume, l'informatique est un domaine en constante evolution qui faconne notre avenir. elle nous offre des outils puissants pour resoudre des problemes, ameliorer notre qualite de vie, et repousser les limites de ce qui est possible. que ce soit dans le domaine professionnel, academique, ou personnel, l'informatique est une competence precieuse qui continue de jouer un role majeur dans notre societe moderne.
 src/main/resources/
-
-//execrice6
-public static void decodeFile(String fromFileName, String toFileName) throws IOException {
-        try (FileInputStream fileInput = new FileInputStream(fromFileName);
-             FileOutputStream fileOutput = new FileOutputStream(toFileName)) {
-
-            // Lire la première valeur pour calculer la clé
-            int tmp = fileInput.read();
-            int key = tmp ^ 255;
-
-            // Réinitialiser le pointeur de fichier au début
-            fileInput.getChannel().position(0);
-
-            // Lire et écrire en appliquant XOR avec la clé
-            while ((tmp = fileInput.read()) != -1) {
-                fileOutput.write(tmp ^ key);
-            }
-        }
-    }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
