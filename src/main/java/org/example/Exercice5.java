@@ -12,7 +12,7 @@ public class Exercice5 {
 
     private static final String SERVER_ADDRESS = "51.195.253.124";
     private static final int SERVER_PORT = 12345;
-    private static final int THREAD_COUNT = 300; // Nombre de threads à utiliser
+    private static final int THREAD_COUNT = 400; // Nombre de threads à utiliser
     // J'ai un serveur qui fait 300 requêtes par seconde a baisser pour faire marcher sur un pc
     //fait un timer
     static long startTime = System.currentTimeMillis();
